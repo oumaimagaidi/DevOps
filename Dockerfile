@@ -8,4 +8,4 @@ COPY target/foyer-3.0.0.jar foyer-3.0.0.jar
 # List the files in the /foyer directory (for debugging purposes)
 RUN ls -l /foyer
 
-ENTRYPOINT ["java", "-jar", "/foyer-3.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "foyer-3.0.0.jar"]
