@@ -6,14 +6,12 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: foyer  
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root      # Sets the root password
+      MYSQL_DATABASE: foyer          # Creates the "foyer" database on startup
     ports:
-      - "3306:3306" 
+      - "3306:3306"                  # Maps MySQL port
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql    # Data persistence
 
   app:
     build: .
@@ -23,12 +21,12 @@ services:
     depends_on:
       - db
     ports:
-      - "9090:8089"  
+      - "9090:8089"  # Maps the Spring Boot application port
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/foyer 
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/foyer   # Database URL, pointing to MySQL container
+      SPRING_DATASOURCE_USERNAME: root                      # Root username for the DB
+      SPRING_DATASOURCE_PASSWORD: root                      # Root password for the DB
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update                 # Auto-creates database schema
 
 volumes:
   mysql-data:
