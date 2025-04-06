@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: your_db_name
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  app:
+    build: .
+    image: 192.168.252.114:8083/springboot-foyer:3.0.0
+    container_name: springboot-app
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "9090:8080"  # Maps host port 9090 to container's 8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/your_db_name
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  mysql-data:
