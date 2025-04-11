@@ -15,8 +15,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   app:
-    build: .
-    image: springboot-app:latest
+    image: 172.27.245.210:8083/emnaouerghemmi/springboot-foyer:3.0.0
     container_name: springboot-app
     restart: always
     ports:
