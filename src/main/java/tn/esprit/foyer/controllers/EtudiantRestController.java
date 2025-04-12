@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/etudiant")
+@CrossOrigin(origins = "http://192.168.252.114:4200")
 @Tag(name = "Gestion des étudiants")
 public class EtudiantRestController {
     IEtudiantService etudiantService;
