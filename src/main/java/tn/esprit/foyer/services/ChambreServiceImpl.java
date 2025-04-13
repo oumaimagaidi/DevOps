@@ -127,5 +127,29 @@ public class ChambreServiceImpl implements IChambreService {
         );
     }
 
+    public void pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
+        List<Chambre> chambres = chambreRepository.findAll();
+        int totalChambres = chambres.size();
+
+        log.info("nbTotalsChambres : {}", totalChambres);
+
+        if (totalChambres == 0) {
+            log.info("Aucune chambre disponible.");
+            return;
+        }
+
+        if (typesChambres.length == 0) {
+            log.info("Aucun type de chambre spécifié.");
+            return;
+        }
+
+        for (TypeChambre type : typesChambres) {
+            int nbChambresType = chambreRepository.nbChambresParType(type);
+            double pourcentage = (nbChambresType / (double) totalChambres) * 100;
+            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, pourcentage);
+        }
+    }
+
+
 
 }

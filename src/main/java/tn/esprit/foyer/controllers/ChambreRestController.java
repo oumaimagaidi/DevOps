@@ -92,5 +92,9 @@ public class ChambreRestController {
         public  List<Chambre> getChambresNonReserveParNomFoyerEtTypeChambre(@PathVariable("nomFoyer") String nomFoyer,@PathVariable("type") TypeChambre type) {
             return chambreService.getChambresNonReserveParNomFoyerEtTypeChambre(nomFoyer,type);
         }
-
+    @PostMapping("/pourcentage")
+    @ResponseBody
+    public void pourcentageChambreParTypeChambre(@RequestBody TypeChambre[] typesChambres) {
+        chambreService.pourcentageChambreParTypeChambre(typesChambres);
+    }
 }
