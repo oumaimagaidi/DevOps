@@ -13,6 +13,18 @@
 	<version>3.0.0</version>
 	<name>foyer</name>
 	<description>foyer</description>
+	<distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Nexus Releases</name>
+            <url>http://localhost:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Nexus Snapshots</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
