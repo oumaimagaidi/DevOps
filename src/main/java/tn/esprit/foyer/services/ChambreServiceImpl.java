@@ -1,6 +1,6 @@
 package tn.esprit.foyer.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@AllArgsConstructor
 public class ChambreServiceImpl implements IChambreService {
 
     private final ChambreRepository chambreRepository;
@@ -80,45 +80,12 @@ public class ChambreServiceImpl implements IChambreService {
 
     @Override
     public List<Chambre> getChambresNonReserveParNomFoyerEtTypeChambre(String nomFoyer, TypeChambre type) {
-        List<Chambre> chambresDisponibles = new ArrayList<>();
-        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1, 1);
-        LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), 12, 31);
-        Foyer f = foyerRepository.findByNomFoyer(nomFoyer);
-        Optional<List<Bloc>> blocsParFoyer = Optional.ofNullable(f.getBlocs());
-        if (blocsParFoyer.isPresent()) {
-            blocsParFoyer.get().forEach(bloc -> bloc.getChambres().forEach(chambre -> {
-                if (chambre.getTypeC().equals(type)) {
-                    Long nbReservationChambre = chambreRepository.checkNbReservationsChambre(startDate, endDate, type,
-                            chambre.getNumeroChambre());
-                    if ((chambre.getTypeC().equals(TypeChambre.SIMPLE) && nbReservationChambre == 0) ||
-                            (chambre.getTypeC().equals(TypeChambre.DOUBLE) && nbReservationChambre < 2) ||
-                            (chambre.getTypeC().equals(TypeChambre.TRIPLE) && nbReservationChambre < 3)) {
-                        chambresDisponibles.add(chambre);
-                    }
-                }
-            }));
-        }
-        return chambresDisponibles;
+        return chambreRepository.findByBlocFoyerNomFoyerAndTypeCAndReservationsEmpty(nomFoyer, type);
     }
 
     @Scheduled(fixedRate = 60000)
     public void pourcentageChambreParTypeChambre() {
         Integer nbTotalsChambres = chambreRepository.findAll().size();
-        log.info("nbTotalsChambres : " + nbTotalsChambres);
-        Arrays.stream(TypeChambre.values()).forEach(
-                typeChambre -> {
-                    Integer nbChambresParType = chambreRepository.nbChambresParType(typeChambre);
-                    Double pourcentageParType = (nbChambresParType.doubleValue() / nbTotalsChambres.doubleValue())
-                            * 100;
-                    log.info("le pourcentage des chambres pour le type " + typeChambre + " est égale à "
-                            + pourcentageParType);
-                });
-    }
-
-    @Override
-    public void pourcentageChambreParTypeChambre(TypeChambre... typesChambres) {
-        List<Chambre> chambres = chambreRepository.findAll();
-        long nbTotalsChambres = chambres.size();
         log.info("nbTotalsChambres : {}", nbTotalsChambres);
 
         if (nbTotalsChambres == 0) {
@@ -126,15 +93,34 @@ public class ChambreServiceImpl implements IChambreService {
             return;
         }
 
-        if (typesChambres == null || typesChambres.length == 0) {
+        TypeChambre[] typesChambres = TypeChambre.values();
+        for (TypeChambre type : typesChambres) {
+            Integer nbChambresType = chambreRepository.nbChambresParType(type);
+            double pourcentage = (nbChambresType / (double) nbTotalsChambres) * 100;
+            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, pourcentage);
+        }
+    }
+
+    public void pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
+        List<Chambre> chambres = chambreRepository.findAll();
+        int totalChambres = chambres.size();
+
+        log.info("nbTotalsChambres : {}", totalChambres);
+
+        if (totalChambres == 0) {
+            log.info("Aucune chambre disponible.");
+            return;
+        }
+
+        if (typesChambres.length == 0) {
             log.info("Aucun type de chambre spécifié.");
             return;
         }
 
         for (TypeChambre type : typesChambres) {
-            long count = chambreRepository.nbChambresParType(type);
-            double percentage = (count * 100.0) / nbTotalsChambres;
-            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, percentage);
+            int nbChambresType = chambreRepository.nbChambresParType(type);
+            double pourcentage = (nbChambresType / (double) totalChambres) * 100;
+            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, pourcentage);
         }
     }
 
