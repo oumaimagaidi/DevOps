@@ -1,6 +1,6 @@
 package tn.esprit.foyer.services;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,19 +19,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
-@AllArgsConstructor
 public class ChambreServiceImpl implements IChambreService {
 
-    ChambreRepository chambreRepository;
-
-    BlocRepository blocRepository;
-
-    FoyerRepository foyerRepository;
+    private final ChambreRepository chambreRepository;
+    private final BlocRepository blocRepository;
+    private final FoyerRepository foyerRepository;
 
     @Override
     public List<Chambre> retrieveAllChambres() {
-
         System.out.println("in method retrieveAllChambres");
         return chambreRepository.findAll();
     }
@@ -48,8 +45,6 @@ public class ChambreServiceImpl implements IChambreService {
 
     @Override
     public Chambre retrieveChambre(Long idChambre) {
-
-
         return chambreRepository.findById(idChambre).orElse(null);
     }
 
@@ -60,32 +55,26 @@ public class ChambreServiceImpl implements IChambreService {
 
     @Override
     public List<Chambre> findByTypeCAndBlocIdBloc(TypeChambre typeChambre, Long idBloc) {
-        //   return chambreRepository.findByTypeCAndBlocIdBloc(typeChambre,idBloc);
         return chambreRepository.findByTypeCAndBlocIdBloc(typeChambre, idBloc);
     }
 
     @Override
     public List<Chambre> findByReservationsEstValid(Boolean estValid) {
-        // return chambreRepository.findByReservationsEstValid(estValid);
         return chambreRepository.findByReservationsValide(estValid);
     }
 
     @Override
     public List<Chambre> findByBlocIdBlocAndBlocCapaciteBlocGreaterThan(Long idBloc, Long capaciteBloc) {
-        //   return chambreRepository.findByBlocIdBlocAndBlocCapaciteBlocGreaterThan(idBloc,capaciteBloc);
         return chambreRepository.findByBlocIdBlocAndBlocCapaciteBloc(idBloc, capaciteBloc);
     }
 
     @Override
     public List<Chambre> getChambresParNomBloc(String nomBloc) {
         return chambreRepository.findByBlocNomBloc(nomBloc);
-
     }
-
 
     @Override
     public long nbChambreParTypeEtBloc(TypeChambre type, long idBloc) {
-
         return chambreRepository.nbChambreParTypeEtBloc(type, idBloc);
     }
 
@@ -97,59 +86,60 @@ public class ChambreServiceImpl implements IChambreService {
         Foyer f = foyerRepository.findByNomFoyer(nomFoyer);
         Optional<List<Bloc>> blocsParFoyer = Optional.ofNullable(f.getBlocs());
         if (blocsParFoyer.isPresent()) {
-            blocsParFoyer.get().forEach(bloc ->
-                    bloc.getChambres().forEach(chambre ->
-                    {
-                        if(chambre.getTypeC().equals(type)) {
-                            Long nbReservationChambre = chambreRepository.checkNbReservationsChambre(startDate, endDate, type, chambre.getNumeroChambre());
-                            if ((chambre.getTypeC().equals(TypeChambre.SIMPLE) && nbReservationChambre == 0) ||
-                                    (chambre.getTypeC().equals(TypeChambre.DOUBLE) && nbReservationChambre < 2) ||
-                                    (chambre.getTypeC().equals(TypeChambre.TRIPLE) && nbReservationChambre < 3)){
-                                chambresDisponibles.add(chambre);
-                            }
-                        }
-                    }));
+            blocsParFoyer.get().forEach(bloc -> bloc.getChambres().forEach(chambre -> {
+                if (chambre.getTypeC().equals(type)) {
+                    Long nbReservationChambre = chambreRepository.checkNbReservationsChambre(startDate, endDate, type,
+                            chambre.getNumeroChambre());
+                    if ((chambre.getTypeC().equals(TypeChambre.SIMPLE) && nbReservationChambre == 0) ||
+                            (chambre.getTypeC().equals(TypeChambre.DOUBLE) && nbReservationChambre < 2) ||
+                            (chambre.getTypeC().equals(TypeChambre.TRIPLE) && nbReservationChambre < 3)) {
+                        chambresDisponibles.add(chambre);
+                    }
+                }
+            }));
         }
         return chambresDisponibles;
     }
 
-  //  @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60000)
     public void pourcentageChambreParTypeChambre() {
         Integer nbTotalsChambres = chambreRepository.findAll().size();
         log.info("nbTotalsChambres : " + nbTotalsChambres);
         Arrays.stream(TypeChambre.values()).forEach(
                 typeChambre -> {
                     Integer nbChambresParType = chambreRepository.nbChambresParType(typeChambre);
-                    Double pourcentageParType = (nbChambresParType.doubleValue() / nbTotalsChambres.doubleValue()) * 100;
+                    Double pourcentageParType = (nbChambresParType.doubleValue() / nbTotalsChambres.doubleValue())
+                            * 100;
                     log.info("le pourcentage des chambres pour le type " + typeChambre + " est égale à "
                             + pourcentageParType);
-                }
-        );
+                });
     }
 
-    public void pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
+    @Override
+    public void pourcentageChambreParTypeChambre(TypeChambre... typesChambres) {
         List<Chambre> chambres = chambreRepository.findAll();
-        int totalChambres = chambres.size();
+        long nbTotalsChambres = chambres.size();
+        log.info("nbTotalsChambres : {}", nbTotalsChambres);
 
-        log.info("nbTotalsChambres : {}", totalChambres);
-
-        if (totalChambres == 0) {
+        if (nbTotalsChambres == 0) {
             log.info("Aucune chambre disponible.");
             return;
         }
 
-        if (typesChambres.length == 0) {
+        if (typesChambres == null || typesChambres.length == 0) {
             log.info("Aucun type de chambre spécifié.");
             return;
         }
 
         for (TypeChambre type : typesChambres) {
-            int nbChambresType = chambreRepository.nbChambresParType(type);
-            double pourcentage = (nbChambresType / (double) totalChambres) * 100;
-            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, pourcentage);
+            long count = chambreRepository.nbChambresParType(type);
+            double percentage = (count * 100.0) / nbTotalsChambres;
+            log.info("Le pourcentage des chambres pour le type {} est égale à {}", type, percentage);
         }
     }
 
-
-
+    @Override
+    public List<Chambre> getChambresParBlocEtType(long idBloc, TypeChambre typeC) {
+        return chambreRepository.findByBlocIdBlocAndTypeC(idBloc, typeC);
+    }
 }

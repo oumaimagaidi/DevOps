@@ -12,11 +12,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tn.esprit.foyer.entities.Chambre;
 import tn.esprit.foyer.entities.TypeChambre;
 import tn.esprit.foyer.repository.ChambreRepository;
 import tn.esprit.foyer.services.ChambreServiceImpl;
-import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class ChambreServiceTest {
@@ -24,22 +24,16 @@ public class ChambreServiceTest {
     @Mock
     private ChambreRepository chambreRepository;
 
+    @Mock
+    private Logger log;
+
     @InjectMocks
     private ChambreServiceImpl chambreService;
 
-    private Logger log;
-
     @BeforeEach
     void setUp() {
-        log = mock(Logger.class);
-        // Injecter manuellement le logger mocké dans le service
-        try {
-            java.lang.reflect.Field logField = ChambreServiceImpl.class.getDeclaredField("log");
-            logField.setAccessible(true);
-            logField.set(chambreService, log);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MockitoAnnotations.openMocks(this);
+        chambreService = new ChambreServiceImpl(chambreRepository, log);
     }
 
     @Test
