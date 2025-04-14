@@ -121,6 +121,11 @@ public class ChambreServiceImpl implements IChambreService {
 
     @Override
     public Map<TypeChambre, Double> pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
+        if (typesChambres == null || typesChambres.length == 0) {
+            log.info("Aucun type de chambre spécifié.");
+            return Map.of();
+        }
+
         List<Chambre> chambres = chambreRepository.findAll();
         log.info("nbTotalsChambres : {}", chambres.size());
 

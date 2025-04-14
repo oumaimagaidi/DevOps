@@ -33,6 +33,29 @@ public class ChambreServiceTest {
     }
 
     @Test
+    void testPourcentageChambreParTypeChambre_NullTypes() {
+        // Act
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(null);
+
+        // Assert
+        assertTrue(result.isEmpty(), "La map doit être vide si types est null");
+        verify(chambreRepository, never()).findAll();
+    }
+
+    @Test
+    void testPourcentageChambreParTypeChambre_EmptyTypes() {
+        // Arrange
+        TypeChambre[] typesChambres = new TypeChambre[0];
+
+        // Act
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(typesChambres);
+
+        // Assert
+        assertTrue(result.isEmpty(), "La map doit être vide si types est vide");
+        verify(chambreRepository, never()).findAll();
+    }
+
+    @Test
     void testPourcentageChambreParTypeChambre_NoChambres() {
         // Arrange
         when(chambreRepository.findAll()).thenReturn(List.of());
