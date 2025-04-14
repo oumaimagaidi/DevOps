@@ -3,6 +3,7 @@ package tn.esprit.foyer;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import tn.esprit.foyer.repository.ChambreRepository;
 import tn.esprit.foyer.services.ChambreServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class ChambreServiceTest {
+class ChambreServiceTest {
 
     @Mock
     private ChambreRepository chambreRepository;
@@ -29,100 +30,79 @@ public class ChambreServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Pas besoin d'initialisation supplémentaire
+        // No setup needed
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_NullTypes() {
+        // Arrange
+        when(chambreRepository.findAll()).thenReturn(List.of());
+
         // Act
         Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(null);
 
         // Assert
-        assertTrue(result.isEmpty(), "La map doit être vide si types est null");
-        verify(chambreRepository, never()).findAll();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(chambreRepository).findAll();
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_EmptyTypes() {
         // Arrange
-        TypeChambre[] typesChambres = new TypeChambre[0];
+        when(chambreRepository.findAll()).thenReturn(List.of());
 
         // Act
-        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(typesChambres);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(new TypeChambre[0]);
 
         // Assert
-        assertTrue(result.isEmpty(), "La map doit être vide si types est vide");
-        verify(chambreRepository, never()).findAll();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(chambreRepository).findAll();
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_NoChambres() {
         // Arrange
+        TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
         when(chambreRepository.findAll()).thenReturn(List.of());
-        TypeChambre[] typesChambres = { TypeChambre.SIMPLE };
 
         // Act
-        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(typesChambres);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
         // Assert
-        assertTrue(result.isEmpty(), "La map doit être vide si aucune chambre");
+        assertNotNull(result);
+        assertEquals(0.0, result.get(TypeChambre.SIMPLE));
+        assertEquals(0.0, result.get(TypeChambre.DOUBLE));
+        assertEquals(0.0, result.get(TypeChambre.TRIPLE));
         verify(chambreRepository).findAll();
     }
 
     @Test
-    void testPourcentageChambreParTypeChambre_WithChambres() {
+    void testPourcentageChambreParTypeChambre_NormalCase() {
         // Arrange
-        Chambre chambreSimple = new Chambre();
-        chambreSimple.setTypeC(TypeChambre.SIMPLE);
-        Chambre chambreDouble = new Chambre();
-        chambreDouble.setTypeC(TypeChambre.DOUBLE);
+        TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
 
-        when(chambreRepository.findAll()).thenReturn(List.of(chambreSimple, chambreDouble));
-        TypeChambre[] typesChambres = { TypeChambre.SIMPLE, TypeChambre.DOUBLE };
+        Chambre chambre1 = new Chambre();
+        chambre1.setTypeC(TypeChambre.SIMPLE);
+
+        Chambre chambre2 = new Chambre();
+        chambre2.setTypeC(TypeChambre.SIMPLE);
+
+        Chambre chambre3 = new Chambre();
+        chambre3.setTypeC(TypeChambre.DOUBLE);
+
+        List<Chambre> chambres = Arrays.asList(chambre1, chambre2, chambre3);
+        when(chambreRepository.findAll()).thenReturn(chambres);
 
         // Act
-        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(typesChambres);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
         // Assert
-        assertEquals(2, result.size(), "La map doit contenir deux entrées");
-        assertEquals(50.0, result.get(TypeChambre.SIMPLE), "Le pourcentage des chambres simples doit être 50%");
-        assertEquals(50.0, result.get(TypeChambre.DOUBLE), "Le pourcentage des chambres doubles doit être 50%");
-        verify(chambreRepository).findAll();
-    }
-
-    @Test
-    void testCalculerPourcentageChambreParType_NoChambres() {
-        // Arrange
-        when(chambreRepository.findAll()).thenReturn(List.of());
-        TypeChambre[] typesChambres = { TypeChambre.SIMPLE };
-
-        // Act
-        Map<TypeChambre, Double> result = chambreService.calculerPourcentageChambreParType(typesChambres);
-
-        // Assert
-        assertTrue(result.isEmpty(), "La map doit être vide si aucune chambre.");
-        verify(chambreRepository).findAll();
-        verify(chambreRepository, never()).nbChambresParType(any());
-    }
-
-    @Test
-    void testCalculerPourcentageChambreParType_WithData() {
-        // Arrange
-        when(chambreRepository.findAll()).thenReturn(List.of(new Chambre(), new Chambre(), new Chambre()));
-        when(chambreRepository.nbChambresParType(TypeChambre.SIMPLE)).thenReturn(2);
-        when(chambreRepository.nbChambresParType(TypeChambre.DOUBLE)).thenReturn(1);
-
-        TypeChambre[] typesChambres = { TypeChambre.SIMPLE, TypeChambre.DOUBLE };
-
-        // Act
-        Map<TypeChambre, Double> result = chambreService.calculerPourcentageChambreParType(typesChambres);
-
-        // Assert
-        assertEquals(2, result.size());
+        assertNotNull(result);
         assertEquals(66.67, result.get(TypeChambre.SIMPLE), 0.01);
         assertEquals(33.33, result.get(TypeChambre.DOUBLE), 0.01);
-
-        verify(chambreRepository).nbChambresParType(TypeChambre.SIMPLE);
-        verify(chambreRepository).nbChambresParType(TypeChambre.DOUBLE);
+        assertEquals(0.0, result.get(TypeChambre.TRIPLE));
+        verify(chambreRepository).findAll();
     }
 }

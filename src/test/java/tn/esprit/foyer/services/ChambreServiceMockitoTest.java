@@ -1,5 +1,6 @@
 package tn.esprit.foyer.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,8 +12,11 @@ import tn.esprit.foyer.repository.BlocRepository;
 import tn.esprit.foyer.repository.ChambreRepository;
 import tn.esprit.foyer.repository.FoyerRepository;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,30 +35,39 @@ class ChambreServiceMockitoTest {
     @InjectMocks
     private ChambreServiceImpl chambreService;
 
+    @BeforeEach
+    void setUp() {
+        // No need to mock the logger anymore
+    }
+
     @Test
     void testPourcentageChambreParTypeChambre_NoChambres() {
         // Arrange
-        when(chambreRepository.findAll()).thenReturn(Collections.emptyList());
-        TypeChambre[] typesToTest = {TypeChambre.SIMPLE};
+        TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
+        when(chambreRepository.findAll()).thenReturn(List.of());
 
         // Act
-        var result = chambreService.pourcentageChambreParTypeChambre(typesToTest);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
         // Assert
-        assertTrue(result.isEmpty());
+        assertNotNull(result);
+        assertEquals(0.0, result.get(TypeChambre.SIMPLE));
+        assertEquals(0.0, result.get(TypeChambre.DOUBLE));
+        assertEquals(0.0, result.get(TypeChambre.TRIPLE));
         verify(chambreRepository).findAll();
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_EmptyTypesArray() {
         // Arrange
-        when(chambreRepository.findAll()).thenReturn(List.of(new Chambre()));
-        TypeChambre[] typesToTest = {};
+        TypeChambre[] types = {};
+        when(chambreRepository.findAll()).thenReturn(List.of());
 
         // Act
-        var result = chambreService.pourcentageChambreParTypeChambre(typesToTest);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
         // Assert
+        assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(chambreRepository).findAll();
     }
@@ -62,23 +75,28 @@ class ChambreServiceMockitoTest {
     @Test
     void testPourcentageChambreParTypeChambre_NormalCase() {
         // Arrange
-        Chambre chambreSimple = new Chambre();
-        chambreSimple.setTypeC(TypeChambre.SIMPLE);
-        Chambre chambreDouble = new Chambre();
-        chambreDouble.setTypeC(TypeChambre.DOUBLE);
-        Chambre chambreDouble2 = new Chambre();
-        chambreDouble2.setTypeC(TypeChambre.DOUBLE);
+        TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
 
-        when(chambreRepository.findAll()).thenReturn(List.of(chambreSimple, chambreDouble, chambreDouble2));
-        TypeChambre[] typesToTest = {TypeChambre.SIMPLE, TypeChambre.DOUBLE};
+        Chambre chambre1 = new Chambre();
+        chambre1.setTypeC(TypeChambre.SIMPLE);
+
+        Chambre chambre2 = new Chambre();
+        chambre2.setTypeC(TypeChambre.SIMPLE);
+
+        Chambre chambre3 = new Chambre();
+        chambre3.setTypeC(TypeChambre.DOUBLE);
+
+        List<Chambre> chambres = Arrays.asList(chambre1, chambre2, chambre3);
+        when(chambreRepository.findAll()).thenReturn(chambres);
 
         // Act
-        var result = chambreService.pourcentageChambreParTypeChambre(typesToTest);
+        Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
         // Assert
-        assertEquals(2, result.size());
-        assertEquals(33.33, result.get(TypeChambre.SIMPLE), 0.01);
-        assertEquals(66.67, result.get(TypeChambre.DOUBLE), 0.01);
+        assertNotNull(result);
+        assertEquals(66.67, result.get(TypeChambre.SIMPLE), 0.01);
+        assertEquals(33.33, result.get(TypeChambre.DOUBLE), 0.01);
+        assertEquals(0.0, result.get(TypeChambre.TRIPLE));
         verify(chambreRepository).findAll();
     }
 }

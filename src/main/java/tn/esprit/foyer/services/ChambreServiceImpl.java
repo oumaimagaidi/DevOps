@@ -89,34 +89,9 @@ public class ChambreServiceImpl implements IChambreService {
         return chambreRepository.findByBlocIdBlocAndTypeC(idBloc, typeC);
     }
 
-    // ✔️ Refined method for calculating percentages
-    public Map<TypeChambre, Double> calculerPourcentageChambreParType(TypeChambre[] typesChambres) {
-        List<Chambre> chambres = chambreRepository.findAll();
-        int totalChambres = chambres.size();
-        log.info("Nombre total de chambres : {}", totalChambres);
-
-        Map<TypeChambre, Double> pourcentages = new HashMap<>();
-
-        // Handle empty or null typesChambres
-        if (totalChambres == 0 || typesChambres == null || typesChambres.length == 0) {
-            log.info("Aucune chambre disponible ou aucun type de chambre spécifié.");
-            return pourcentages;
-        }
-
-        // Calculate percentage for each type of chambre
-        for (TypeChambre type : typesChambres) {
-            int nbChambresType = chambreRepository.nbChambresParType(type);
-            double pourcentage = (nbChambresType / (double) totalChambres) * 100;
-            pourcentages.put(type, pourcentage);
-        }
-
-        return pourcentages;
-    }
-
-    // 🔁 Refined scheduled method that logs percentages
-    @Scheduled(fixedRate = 60000)
+    @Override
     public void pourcentageChambreParTypeChambre() {
-        Map<TypeChambre, Double> pourcentages = calculerPourcentageChambreParType(TypeChambre.values());
+        Map<TypeChambre, Double> pourcentages = pourcentageChambreParTypeChambre(TypeChambre.values());
 
         // Check if the map is empty and log an appropriate message
         if (pourcentages.isEmpty()) {
@@ -129,31 +104,41 @@ public class ChambreServiceImpl implements IChambreService {
 
     @Override
     public Map<TypeChambre, Double> pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
+        Map<TypeChambre, Double> pourcentages = new HashMap<>();
+        List<Chambre> chambres = chambreRepository.findAll();
+        int nbTotalsChambres = chambres.size();
+
+        log.info("Nombre total de chambres : {}", nbTotalsChambres);
+
         if (typesChambres == null || typesChambres.length == 0) {
             log.info("Aucun type de chambre spécifié.");
-            chambreRepository.findAll(); // Appel explicite pour le test
-            return Map.of();
+            return pourcentages;
         }
 
-        List<Chambre> chambres = chambreRepository.findAll();
-        log.info("nbTotalsChambres : {}", chambres.size());
+        // Initialize all requested types with 0.0
+        for (TypeChambre type : typesChambres) {
+            pourcentages.put(type, 0.0);
+        }
 
-        if (chambres.isEmpty()) {
+        if (nbTotalsChambres == 0) {
             log.info("Aucune chambre disponible.");
-            return Map.of();
+            return pourcentages;
         }
 
-        Map<TypeChambre, Long> countByType = chambres.stream()
-                .filter(chambre -> List.of(typesChambres).contains(chambre.getTypeC()))
-                .collect(Collectors.groupingBy(Chambre::getTypeC, Collectors.counting()));
+        // Count chambres by type
+        Map<TypeChambre, Integer> countByType = new HashMap<>();
+        for (Chambre chambre : chambres) {
+            TypeChambre type = chambre.getTypeC();
+            countByType.merge(type, 1, Integer::sum);
+        }
 
-        Map<TypeChambre, Double> pourcentages = countByType.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> (double) (entry.getValue() * 100) / chambres.size()));
-
-        pourcentages.forEach((type, pourcentage) -> log.info("Le pourcentage des chambres pour le type {} est : {}%",
-                type, pourcentage));
+        // Calculate percentages
+        for (TypeChambre type : typesChambres) {
+            int count = countByType.getOrDefault(type, 0);
+            double percentage = (double) count / nbTotalsChambres * 100;
+            pourcentages.put(type, percentage);
+            log.info("Le pourcentage des chambres pour le type {} est : {}%", type, percentage);
+        }
 
         return pourcentages;
     }
