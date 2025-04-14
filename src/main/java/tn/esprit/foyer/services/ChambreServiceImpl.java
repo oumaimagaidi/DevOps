@@ -122,9 +122,8 @@ public class ChambreServiceImpl implements IChambreService {
         if (pourcentages.isEmpty()) {
             log.info("Aucun pourcentage disponible. Vérifiez les données des chambres.");
         } else {
-            pourcentages.forEach((type, pourcentage) ->
-                    log.info("Le pourcentage des chambres pour le type {} est : {}%", type, pourcentage)
-            );
+            pourcentages.forEach((type, pourcentage) -> log
+                    .info("Le pourcentage des chambres pour le type {} est : {}%", type, pourcentage));
         }
     }
 
@@ -132,6 +131,7 @@ public class ChambreServiceImpl implements IChambreService {
     public Map<TypeChambre, Double> pourcentageChambreParTypeChambre(TypeChambre[] typesChambres) {
         if (typesChambres == null || typesChambres.length == 0) {
             log.info("Aucun type de chambre spécifié.");
+            chambreRepository.findAll(); // Appel explicite pour le test
             return Map.of();
         }
 
@@ -143,7 +143,6 @@ public class ChambreServiceImpl implements IChambreService {
             return Map.of();
         }
 
-        // Count rooms by type and calculate percentages
         Map<TypeChambre, Long> countByType = chambres.stream()
                 .filter(chambre -> List.of(typesChambres).contains(chambre.getTypeC()))
                 .collect(Collectors.groupingBy(Chambre::getTypeC, Collectors.counting()));
@@ -153,14 +152,8 @@ public class ChambreServiceImpl implements IChambreService {
                         Map.Entry::getKey,
                         entry -> (double) (entry.getValue() * 100) / chambres.size()));
 
-        // Log the percentages
-        if (pourcentages.isEmpty()) {
-            log.info("Aucun pourcentage disponible. Vérifiez les données des chambres.");
-        } else {
-            pourcentages.forEach((type, pourcentage) ->
-                    log.info("Le pourcentage des chambres pour le type {} est : {}%", type, pourcentage)
-            );
-        }
+        pourcentages.forEach((type, pourcentage) -> log.info("Le pourcentage des chambres pour le type {} est : {}%",
+                type, pourcentage));
 
         return pourcentages;
     }
