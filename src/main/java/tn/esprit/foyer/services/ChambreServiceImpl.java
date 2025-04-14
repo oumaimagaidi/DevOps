@@ -89,7 +89,7 @@ public class ChambreServiceImpl implements IChambreService {
         return chambreRepository.findByBlocIdBlocAndTypeC(idBloc, typeC);
     }
 
-    // ✔️ Méthode principale avec Map
+    // ✔️ Refined method for calculating percentages
     public Map<TypeChambre, Double> calculerPourcentageChambreParType(TypeChambre[] typesChambres) {
         List<Chambre> chambres = chambreRepository.findAll();
         int totalChambres = chambres.size();
@@ -97,11 +97,13 @@ public class ChambreServiceImpl implements IChambreService {
 
         Map<TypeChambre, Double> pourcentages = new HashMap<>();
 
-        if (totalChambres == 0 || typesChambres.length == 0) {
+        // Handle empty or null typesChambres
+        if (totalChambres == 0 || typesChambres == null || typesChambres.length == 0) {
             log.info("Aucune chambre disponible ou aucun type de chambre spécifié.");
             return pourcentages;
         }
 
+        // Calculate percentage for each type of chambre
         for (TypeChambre type : typesChambres) {
             int nbChambresType = chambreRepository.nbChambresParType(type);
             double pourcentage = (nbChambresType / (double) totalChambres) * 100;
@@ -111,12 +113,19 @@ public class ChambreServiceImpl implements IChambreService {
         return pourcentages;
     }
 
-    // 🔁 Méthode planifiée qui affiche les pourcentages
+    // 🔁 Refined scheduled method that logs percentages
     @Scheduled(fixedRate = 60000)
     public void pourcentageChambreParTypeChambre() {
         Map<TypeChambre, Double> pourcentages = calculerPourcentageChambreParType(TypeChambre.values());
-        pourcentages.forEach((type, pourcentage) -> log.info("Le pourcentage des chambres pour le type {} est : {}%",
-                type, pourcentage));
+
+        // Check if the map is empty and log an appropriate message
+        if (pourcentages.isEmpty()) {
+            log.info("Aucun pourcentage disponible. Vérifiez les données des chambres.");
+        } else {
+            pourcentages.forEach((type, pourcentage) ->
+                    log.info("Le pourcentage des chambres pour le type {} est : {}%", type, pourcentage)
+            );
+        }
     }
 
     @Override
@@ -134,6 +143,7 @@ public class ChambreServiceImpl implements IChambreService {
             return Map.of();
         }
 
+        // Count rooms by type and calculate percentages
         Map<TypeChambre, Long> countByType = chambres.stream()
                 .filter(chambre -> List.of(typesChambres).contains(chambre.getTypeC()))
                 .collect(Collectors.groupingBy(Chambre::getTypeC, Collectors.counting()));
@@ -143,8 +153,14 @@ public class ChambreServiceImpl implements IChambreService {
                         Map.Entry::getKey,
                         entry -> (double) (entry.getValue() * 100) / chambres.size()));
 
-        pourcentages.forEach((type, pourcentage) -> log.info("Le pourcentage des chambres pour le type {} est : {}%",
-                type, pourcentage));
+        // Log the percentages
+        if (pourcentages.isEmpty()) {
+            log.info("Aucun pourcentage disponible. Vérifiez les données des chambres.");
+        } else {
+            pourcentages.forEach((type, pourcentage) ->
+                    log.info("Le pourcentage des chambres pour le type {} est : {}%", type, pourcentage)
+            );
+        }
 
         return pourcentages;
     }
