@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tn.esprit.foyer.entities.Chambre;
 import tn.esprit.foyer.entities.TypeChambre;
 import tn.esprit.foyer.repository.ChambreRepository;
@@ -29,21 +26,20 @@ public class ChambreServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        // Pas besoin d'initialisation supplémentaire
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_NoChambres() {
         // Arrange
-        when(chambreRepository.findAll()).thenReturn(List.of()); // Aucune chambre
+        when(chambreRepository.findAll()).thenReturn(List.of());
         TypeChambre[] typesChambres = { TypeChambre.SIMPLE };
 
         // Act
         chambreService.pourcentageChambreParTypeChambre(typesChambres);
 
         // Assert
-        // Les assertions sur le logger sont supprimées car nous ne pouvons pas les
-        // mocker facilement
-        // avec un champ static final
+        verify(chambreRepository).findAll();
+        verify(chambreRepository, never()).nbChambresParType(any());
     }
 }
