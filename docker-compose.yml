@@ -16,7 +16,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   springboot:
-    image: my-springboot-app:latest  # Replace with your Spring Boot image name
+        image: 192.168.252.114:8083/springboot-foyer:3.0.0
     container_name: nodemongoapp-5.0   # Fixed: a valid container name without colons or slashes
     restart: unless-stopped
     depends_on:
