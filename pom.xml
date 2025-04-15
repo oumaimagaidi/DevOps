@@ -15,12 +15,12 @@
 	<description>foyer</description>
 	<distributionManagement>
         <repository>
-            <id>nexus-releases</id> <!-- Correspond à l'id dans settings.xml -->
+            <id>nexus-releases</id>
             <name>Nexus Releases</name>
             <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus-snapshots</id> <!-- Correspond à l'id dans settings.xml -->
+            <id>nexus-snapshots</id>
             <name>Nexus Snapshots</name>
             <url>http://localhost:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
@@ -29,6 +29,7 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -37,11 +38,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.0.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
@@ -62,6 +66,8 @@
 			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+
 		<!-- Mockito -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -74,18 +80,22 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- Testcontainers -->
+
+
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<version>1.19.3</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mysql</artifactId>
 			<version>1.19.3</version> <!-- Utilisez une version récente et stable -->
 			<scope>test</scope>
 		</dependency>
+
 		<!-- PowerMock pour les tests -->
 		<dependency>
 			<groupId>org.powermock</groupId>
@@ -130,15 +140,16 @@
 						<phase>verify</phase>
 						<goals>
 							<goal>report</goal>
-						</executions>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-deploy-plugin</artifactId>
-  <version>3.1.1</version>
-</plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-deploy-plugin</artifactId>
+  			<version>3.1.1</version>
+			</plugin>
+
 		</plugins>
 	</build>
 
