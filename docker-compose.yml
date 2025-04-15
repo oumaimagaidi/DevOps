@@ -16,8 +16,8 @@ services:
       - mysql_data:/var/lib/mysql
 
   springboot:
-        image: 172.23.85.35:8083/springboot-foyer:3.0.0
-    container_name: nodemongoapp-5.0   # Fixed: a valid container name without colons or slashes
+    image: 172.23.85.35:8083/springboot-foyer:3.0.0
+    container_name: nodemongoapp-5.0
     restart: unless-stopped
     depends_on:
       - mysql
@@ -27,7 +27,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?useSSL=false&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update  # or create, depending on your needs
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
 volumes:
   mysql_data:
