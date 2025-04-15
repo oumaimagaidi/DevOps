@@ -36,12 +36,8 @@ public class Bloc1ServiceImpl implements IBlocService{
     public List<Bloc> findByFoyerUniversiteIdUniversite(Long idUniversite) {
         return null;
     }
-
     @Override
-    public Bloc affecterChambresABloc(List<Long> numChambre, String nomBloc) {
-        return null;
-    }
-
+    Bloc affecterChambresABloc(List<Long> numChambres, String nomBloc);
     @Override
     public void listeChambresParBloc() {
 

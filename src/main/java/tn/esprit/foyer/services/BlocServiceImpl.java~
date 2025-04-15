@@ -58,7 +58,7 @@ public class BlocServiceImpl implements IBlocService{
           return  blocRepository.findByFoyerUniversite(idUniversite);
     }
     @Override
-    public Bloc affecterChambresABloc(List<Long> numChambres, String nomBloc) {
+    public void affecterChambresABloc(List<Long> numChambres, String nomBloc) {
         // Implementation here
         Bloc bloc = blocRepository.findByNomBloc(nomBloc);
         if (bloc == null) {
@@ -73,8 +73,6 @@ public class BlocServiceImpl implements IBlocService{
             chambre.setBloc(bloc);
             chambreRepository.save(chambre);
         }
-
-        return bloc; // Return the modified bloc
     }
 
   //  @Scheduled(fixedRate = 60000)

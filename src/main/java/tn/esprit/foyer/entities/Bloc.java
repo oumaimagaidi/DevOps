@@ -30,9 +30,9 @@ public class Bloc implements Serializable {
     @JsonIgnore
      Foyer foyer;
 
+    public Bloc(Object o, String blocC, long l, Object o1) {
 
-
-
+    }
 
 
     @Override
