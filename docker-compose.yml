@@ -17,7 +17,7 @@ services:
 
   springboot:
     image: my-springboot-app:latest  # Replace with your Spring Boot image name
-    container_name: 172.23.85.35/nodemongoapp:5.0
+    container_name: nodemongoapp-5.0   # Fixed: a valid container name without colons or slashes
     restart: unless-stopped
     depends_on:
       - mysql
@@ -25,8 +25,8 @@ services:
       - "8089:8089"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?useSSL=false&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME:root 
-      SPRING_DATASOURCE_PASSWORD:root 
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_HIBERNATE_DDL_AUTO: update  # or create, depending on your needs
 
 volumes:
