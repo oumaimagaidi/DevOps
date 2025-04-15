@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: springdb
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  springboot:
+    image: my-springboot-app:latest  # Replace with your Spring Boot image name
+    container_name: springboot-app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME:root 
+      SPRING_DATASOURCE_PASSWORD:root 
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update  # or create, depending on your needs
+
+volumes:
+  mysql_data:
