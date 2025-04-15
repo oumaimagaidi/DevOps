@@ -17,7 +17,7 @@ services:
 
   springboot:
     image: my-springboot-app:latest  # Replace with your Spring Boot image name
-    container_name: springboot-app
+    container_name: 172.23.85.35/nodemongoapp:5.0
     restart: unless-stopped
     depends_on:
       - mysql
