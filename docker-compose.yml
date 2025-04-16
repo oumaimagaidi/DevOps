@@ -7,13 +7,12 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: springdb
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: rootpassword  # Set your root password here
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+
 
   springboot:
     image: 172.23.85.35:8083/springboot-foyer:3.0.0
