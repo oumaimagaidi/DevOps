@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/chambre")
+@CrossOrigin(origins = {"http://192.168.1.140:4200","http://172.23.85.35:4200","http://localhost:4200"})
 
 public class ChambreRestController {
     IChambreService chambreService;
