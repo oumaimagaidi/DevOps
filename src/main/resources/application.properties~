@@ -27,4 +27,3 @@ logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %-5level - %logger{60} - %msg%
 management.endpoints.web.exposure.include=prometheus,health,info,metrics
 management.metrics.tags.application=Gestion-Foyer
 
-MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics

@@ -24,7 +24,8 @@ public class Reservation implements Serializable {
     @Column(name="idReservation",length = 50)
     String idReservation; // Clé primaire
    // @Temporal(TemporalType.DATE)
-   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate anneeUniversitaire;
     Boolean estValid;
     @ManyToMany()

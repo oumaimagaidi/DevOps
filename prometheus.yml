@@ -1,11 +1,21 @@
- 
+global:
+  scrape_interval: 15s
+
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9090"]
 
-
- - job_name: jenkins
+  - job_name: "jenkins"
     metrics_path: /prometheus
     static_configs:
-      - targets: ['172.27.245.210:8080'] 
+      - targets: ['172.27.245.210:8080']
+
+  - job_name: "spring-boot"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['springboot-app:8089']  # Utilisez le nom du container
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: "gestion-foyer-backend"

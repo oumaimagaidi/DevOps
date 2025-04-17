@@ -1,36 +1,20 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:13
-    container_name: postgres-db
-    restart: always
-    environment:
-      POSTGRES_DB: tpfoyer
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
+  sonarqube:
+    image: sonarqube:lts
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  app:
-    image: 172.27.245.210:8083/emnaouerghemmi/springboot-foyer:3.0.0
-    container_name: springboot-app
-    restart: always
+      - "9000:9000"
+  
+  nexus:
+    image: sonatype/nexus3
     ports:
-      - "8089:8089"
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tpfoyer
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-      SERVER_SERVLET_CONTEXT_PATH: /foyer
-      SERVER_PORT: 8089
-
-volumes:
-  postgres-data:
+      - "8081:8081"
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+  
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
