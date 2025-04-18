@@ -17,9 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for UniversiteServiceImpl using JUnit 5 and Mockito.
- */
+
 public class UniversiteServiceImplTest {
 
     // Mocked dependencies
@@ -29,23 +27,17 @@ public class UniversiteServiceImplTest {
     @Mock
     private FoyerRepository foyerRepository;
 
-    // Service instance with injected mocks
     @InjectMocks
     private UniversiteServiceImpl universiteService;
 
-    private AutoCloseable closeable; // Field to store the mocks
+    private AutoCloseable closeable; 
 
-    /**
-     * Sets up the mocks before each test.
-     */
+
     @BeforeEach
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
     }
 
-    /**
-     * Closes the mocks after each test.
-     */
     @AfterEach
     public void tearDown() throws Exception {
         closeable.close();
