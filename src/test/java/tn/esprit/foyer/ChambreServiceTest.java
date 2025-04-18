@@ -30,18 +30,18 @@ class ChambreServiceTest {
 
     @BeforeEach
     void setUp() {
-        // No setup needed
+      
     }
 
     @Test
     void testPourcentageChambreParTypeChambre_NullTypes() {
-        // Arrange
+     
         when(chambreRepository.findAll()).thenReturn(List.of());
 
-        // Act
+      
         Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(null);
 
-        // Assert
+        
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(chambreRepository).findAll();
@@ -49,13 +49,13 @@ class ChambreServiceTest {
 
     @Test
     void testPourcentageChambreParTypeChambre_EmptyTypes() {
-        // Arrange
+       
         when(chambreRepository.findAll()).thenReturn(List.of());
 
-        // Act
+       
         Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(new TypeChambre[0]);
 
-        // Assert
+       
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(chambreRepository).findAll();
@@ -63,14 +63,14 @@ class ChambreServiceTest {
 
     @Test
     void testPourcentageChambreParTypeChambre_NoChambres() {
-        // Arrange
+   
         TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
         when(chambreRepository.findAll()).thenReturn(List.of());
 
-        // Act
+    
         Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
-        // Assert
+       
         assertNotNull(result);
         assertEquals(0.0, result.get(TypeChambre.SIMPLE));
         assertEquals(0.0, result.get(TypeChambre.DOUBLE));
@@ -80,7 +80,7 @@ class ChambreServiceTest {
 
     @Test
     void testPourcentageChambreParTypeChambre_NormalCase() {
-        // Arrange
+     
         TypeChambre[] types = { TypeChambre.SIMPLE, TypeChambre.DOUBLE, TypeChambre.TRIPLE };
 
         Chambre chambre1 = new Chambre();
@@ -95,10 +95,9 @@ class ChambreServiceTest {
         List<Chambre> chambres = Arrays.asList(chambre1, chambre2, chambre3);
         when(chambreRepository.findAll()).thenReturn(chambres);
 
-        // Act
+   
         Map<TypeChambre, Double> result = chambreService.pourcentageChambreParTypeChambre(types);
 
-        // Assert
         assertNotNull(result);
         assertEquals(66.67, result.get(TypeChambre.SIMPLE), 0.01);
         assertEquals(33.33, result.get(TypeChambre.DOUBLE), 0.01);
