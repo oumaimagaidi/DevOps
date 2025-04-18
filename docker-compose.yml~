@@ -2,31 +2,37 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
-    container_name: mysql-db
+    image: postgres:14
+    container_name: postgres-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root      # Sets the root password
-      MYSQL_DATABASE: foyer          # Creates the "foyer" database on startup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: tpfoyer
     ports:
-      - "3306:3306"                  # Maps MySQL port
+      - "5432:5432"
     volumes:
-      - mysql-data:/var/lib/mysql    # Data persistence
+      - postgres-data:/var/lib/postgresql/data
 
   app:
-    build: .
+    build: .  # si tu buildes localement, sinon commente cette ligne
     image: 192.168.252.114:8083/springboot-foyer:3.0.0
     container_name: springboot-app
     restart: always
     depends_on:
       - db
     ports:
-      - "9097:8089"  # Maps the Spring Boot application port
+      - "9097:8089"  # HostPort:ContainerPort
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/foyer   # Database URL, pointing to MySQL container
-      SPRING_DATASOURCE_USERNAME: root                      # Root username for the DB
-      SPRING_DATASOURCE_PASSWORD: root                      # Root password for the DB
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update                 # Auto-creates database schema
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tpfoyer
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SERVER_SERVLET_CONTEXT_PATH: /foyer
+      SERVER_PORT: 8089
 
 volumes:
-  mysql-data:
+  postgres-data:

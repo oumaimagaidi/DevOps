@@ -16,7 +16,7 @@ services:
 
   app:
     build: .  # si tu buildes localement, sinon commente cette ligne
-    image: 192.168.252.114:8083/springboot-foyer:3.0.0
+    image: 172.27.245.210:8083/springboot-foyer:3.0.0
     container_name: springboot-app
     restart: always
     depends_on:
