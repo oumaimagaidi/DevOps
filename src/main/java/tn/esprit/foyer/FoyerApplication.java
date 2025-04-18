@@ -22,10 +22,10 @@ public class FoyerApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry
 						.addMapping("/**")                         // apply to all endpoints
-						.allowedOrigins("http://192.168.252.114:4200") // only this frontend
+						.allowedOrigins("*") // only this frontend
 						.allowedMethods("*")                       // GET, POST, PUT, DELETE, OPTIONS, etc.
 						.allowedHeaders("*")                       // all request headers
-						.allowCredentials(true);                   // allow cookies/auth if needed
+						.allowCredentials(false);                   // allow cookies/auth if needed
 			}
 		};
 	}
